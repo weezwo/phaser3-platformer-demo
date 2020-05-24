@@ -1,0 +1,178 @@
+<!doctype html> 
+<html lang="en"> 
+<head> 
+    <meta charset="UTF-8" />
+    <title>Demo</title>
+    <script src="//cdn.jsdelivr.net/npm/phaser@3.11.0/dist/phaser.js"></script>
+    <style type="text/css">
+        body {
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+
+<script type="text/javascript">
+
+    let config = {
+        type: Phaser.AUTO,
+        width: 1020,
+        height: 600,
+        scene: {
+            preload: preload,
+            create: create,
+            update: update
+        },
+        pixelArt: true,
+        physics: {
+        default: 'arcade',
+        arcade: {
+            gravity: { y: 300 },
+            debug: false
+        },
+    },
+
+    };
+
+    const game = new Phaser.Game(config);
+
+    function preload ()
+    {
+      this.load.image('sky', '/assets/environment/parallax-mountain-bg.png');
+      this.load.image('farMountain', '/assets/environment/parallax-mountain-montain-far.png');
+      this.load.image('mountain', '/assets/environment/parallax-mountain-mountains.png');
+      this.load.image('farTrees', '/assets/environment/parallax-mountain-trees.png');
+      this.load.image('trees', '/assets/environment/parallax-mountain-foreground-trees.png');
+      this.load.spritesheet('womanIdle', 'assets/woman-idle.png', { frameWidth: 37, frameHeight: 46 });
+
+      this.load.spritesheet('womanWalk', 'assets/woman-walk.png', { frameWidth: 37, frameHeight: 46 });
+      }
+
+    function create ()
+    {
+
+      this.farMountainDelta = 0.05;
+      this.mountainDelta = 0.10;
+      this.farTreesDelta = 0.2;
+      this.treesDelta = 0.5;
+
+      sky = this.add.image(510, 300, 'sky');
+      sky.displayWidth = 1050;
+      sky.scaleY = sky.scaleX;
+
+      this.farMountain = this.add.tileSprite(
+      510,
+      350,
+      1024,
+      750, 
+      'farMountain'
+      )
+
+      this.farMountain.tileScaleX = 4;
+      this.farMountain.tileScaleY = 4;
+
+      this.mountain = this.add.tileSprite(
+      510,
+      400,
+      1024,
+      750,
+      'mountain'
+      )
+
+      this.mountain.tileScaleX = 4;
+      this.mountain.tileScaleY = 4;
+
+      this.farTrees = this.add.tileSprite(
+      510,
+      335,
+      1024,
+      750,
+      'farTrees'
+      )
+
+      this.farTrees.tileScaleX = 4;
+      this.farTrees.tileScaleY = 4;
+
+      this.trees = this.add.tileSprite(
+      510,
+      335,
+      1024,
+      750,
+      'trees'
+      )
+
+      this.trees.tileScaleX = 4;
+      this.trees.tileScaleY = 4;
+
+      this.player = this.physics.add.sprite(50, 520, 'womanIdle');
+      this.player.displayWidth = 125;
+      this.player.scaleY = this.player.scaleX;
+      this.player.setCollideWorldBounds(true);
+
+      // this.cameras.main.startFollow(this.player);
+      this.cursors = this.input.keyboard.createCursorKeys();
+
+      this.anims.create({
+        key: 'left',
+        frames: this.anims.generateFrameNumbers('womanWalk', { start: 0, end: 5 }),
+        frameRate: 10,
+        repeat: -1
+      });
+
+      this.anims.create({
+        key: 'turn',
+        frames: this.anims.generateFrameNumbers('womanIdle', { start: 0, end: 6 }), 
+        frameRate: 5,
+        repeat: -1
+      });
+
+      this.anims.create({
+        key: 'right',
+        frames: this.anims.generateFrameNumbers('womanWalk', { start: 0, end: 5 }),
+        frameRate: 7,
+        repeat: -1
+      });
+
+    }
+
+    function update ()
+    {
+
+      if (this.cursors.left.isDown)
+      {
+        this.player.setVelocityX(-160);
+
+        this.player.anims.play('left', true);
+        this.player.flipX = true;
+
+        this.farMountain.tilePositionX -= this.farMountainDelta;
+        this.mountain.tilePositionX -= this.mountainDelta;
+        this.farTrees.tilePositionX -= this.farTreesDelta;
+        this.trees.tilePositionX -= this.treesDelta;
+
+      }
+      else if (this.cursors.right.isDown)
+      {
+        this.player.setVelocityX(160);
+
+        this.player.anims.play('right', true);
+        this.player.flipX = false;
+
+        this.farMountain.tilePositionX += this.farMountainDelta;
+        this.mountain.tilePositionX += this.mountainDelta;
+        this.farTrees.tilePositionX += this.farTreesDelta;
+        this.trees.tilePositionX += this.treesDelta;
+      }
+      else
+      {
+        this.player.setVelocityX(0);
+
+        this.player.anims.play('turn', true);
+      }
+
+    }
+
+</script>
+
+</body>
+</html>
