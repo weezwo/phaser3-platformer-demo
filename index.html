@@ -44,8 +44,8 @@
       this.load.image('farTrees', '/assets/environment/parallax-mountain-trees.png');
       this.load.image('trees', '/assets/environment/parallax-mountain-foreground-trees.png');
       this.load.spritesheet('womanIdle', 'assets/woman-idle.png', { frameWidth: 37, frameHeight: 46 });
-
       this.load.spritesheet('womanWalk', 'assets/woman-walk.png', { frameWidth: 37, frameHeight: 46 });
+      //this.load.tilemapTiledJSON('well-map', '/maps/well-map1.json', null)
       }
 
     function create ()
@@ -104,6 +104,8 @@
       this.trees.tileScaleX = 4;
       this.trees.tileScaleY = 4;
 
+      //let map = this.data.map = this.add.tilemap('well-map');
+
       this.player = this.physics.add.sprite(50, 520, 'womanIdle');
       this.player.displayWidth = 125;
       this.player.scaleY = this.player.scaleX;
@@ -133,6 +135,13 @@
         repeat: -1
       });
 
+      this.anims.create({
+        key: 'jump',
+        frames: this.anims.generateFrameNumbers('womanWalk', { start: 2, end: 5 }),
+        frameRate: 5,
+        repeat: -1
+      });
+
     }
 
     function update ()
@@ -141,8 +150,11 @@
       if (this.cursors.left.isDown)
       {
         this.player.setVelocityX(-160);
-
-        this.player.anims.play('left', true);
+        if(this.player.body.blocked.down) {
+          this.player.anims.play('left', true);
+        } else {
+          this.player.anims.play('jump', true);
+        }
         this.player.flipX = true;
 
         this.farMountain.tilePositionX -= this.farMountainDelta;
@@ -154,8 +166,11 @@
       else if (this.cursors.right.isDown)
       {
         this.player.setVelocityX(160);
-
-        this.player.anims.play('right', true);
+        if(this.player.body.blocked.down) {
+          this.player.anims.play('right', true);
+        } else {
+          this.player.anims.play('jump', true);
+        }
         this.player.flipX = false;
 
         this.farMountain.tilePositionX += this.farMountainDelta;
@@ -168,6 +183,11 @@
         this.player.setVelocityX(0);
 
         this.player.anims.play('turn', true);
+      }
+
+      if (this.cursors.up.isDown && this.player.body.blocked.down)
+      {
+        this.player.setVelocityY(-230);
       }
 
     }
