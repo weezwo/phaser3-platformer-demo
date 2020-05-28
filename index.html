@@ -45,7 +45,8 @@
       this.load.image('trees', '/assets/environment/parallax-mountain-foreground-trees.png');
       this.load.spritesheet('womanIdle', 'assets/woman-idle.png', { frameWidth: 37, frameHeight: 46 });
       this.load.spritesheet('womanWalk', 'assets/woman-walk.png', { frameWidth: 37, frameHeight: 46 });
-      //this.load.tilemapTiledJSON('well-map', '/maps/well-map1.json', null)
+      this.load.image('tiles', 'assets/props.png', { frameWidth: 32, frameHeight: 32 });
+      this.load.tilemapTiledJSON('well-map', '/maps/well-map.json', null)
       }
 
     function create ()
@@ -104,7 +105,10 @@
       this.trees.tileScaleX = 4;
       this.trees.tileScaleY = 4;
 
-      //let map = this.data.map = this.add.tilemap('well-map');
+      this.map = this.make.tilemap({ key: 'well-map' })
+      const tileset = this.map.addTilesetImage('props', 'tiles', 32, 32)
+      this.backgroundLayer = this.map.createStaticLayer('Tile Layer 1', tileset, 0, 200);
+      // layer name must match layer name in tiled
 
       this.player = this.physics.add.sprite(50, 520, 'womanIdle');
       this.player.displayWidth = 125;
