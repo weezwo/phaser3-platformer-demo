@@ -107,8 +107,11 @@
 
       this.map = this.make.tilemap({ key: 'well-map' })
       const tileset = this.map.addTilesetImage('props', 'tiles', 32, 32)
-      this.backgroundLayer = this.map.createStaticLayer('Tile Layer 1', tileset, 0, 200);
+      this.backgroundLayer = this.map.createDynamicLayer('Tile Layer 1', tileset, 0, 200);
       // layer name must match layer name in tiled
+
+      //this.backgroundLayer.scale.set(2);
+      //this.backgroundLayer.resizeWorld();
 
       this.player = this.physics.add.sprite(50, 520, 'womanIdle');
       this.player.displayWidth = 125;
@@ -146,6 +149,9 @@
         repeat: -1
       });
 
+      // colliders
+      this.physics.add.collider(this.player, this.backgroundLayer);
+      this.backgroundLayer.setCollisionByExclusion([-1]);
     }
 
     function update ()
