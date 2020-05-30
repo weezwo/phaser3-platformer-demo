@@ -126,18 +126,22 @@
       // layer name must match layer name in tiled
 
       // crates
-      this.crates = this.physics.add.staticGroup();
+      this.crates = this.physics.add.group();
 
       this.crates.create(470, 557, 'crate');
-      this.crates.create(400, 557, 'crate');
+      //this.crates.create(400, 557, 'crate');
       this.crates.create(600, 470, 'crate');
       this.crates.create(730, 400, 'crate'); 
 
-      // this is undoubtedly slower than iterating once, but I want the sample
-      this.crates.children.iterateLocal('setSize', 78, 67);
-      this.crates.children.iterateLocal('setOffset', -17, -15)
       this.crates.children.iterate(function(c){
         c.setScale(2);
+        c.body.setSize(32, 32);
+        c.body.setOffset(8, 2);
+        c.body.useDamping=true;
+        c.setDrag(1);
+        //c.body.setImmovable(true);
+        c.setGravity(-6000,-3000);
+        //c.body.setAllowGravity(false);
       });
 
       // books)
@@ -148,7 +152,6 @@
       })
       this.books.children.iterate(function(b){
         b.setScale(2);
-        b.body.setGravityY(-10);
         b.setBounce(0.5)
       })
 
@@ -197,19 +200,30 @@
       });
 
       // colliders
+      this.physics.add.collider(this.crates);
       this.physics.add.collider(this.player, this.backgroundLayer);
       this.physics.add.collider(this.player, this.crates);
+      this.physics.add.collider(this.books, this.crates);
+      //this.physics.add.collider(this.crates, this.crates);
+      this.physics.add.collider(this.crates, this.backgroundLayer);
       this.physics.add.collider(this.books, this.backgroundLayer);
-      this.physics.add.collider(this.books, this.crates)
+      this.physics.add.collider(this.books, this.crates);
+      //this.physics.add.collider(this.crates, this.crates);
       this.backgroundLayer.setCollisionByExclusion([-1]);
 
       // overlap
-      this.physics.add.overlap(this.player, this.books, collectBook)
+      this.physics.add.overlap(this.player, this.books, collectBook);
+      //this.physics.add.overlap(this.player, this.crates, overlapCrate);
 
 
 
       function collectBook (player, book) {
         book.disableBody(true, true); // also deactivate, also hide
+      }
+
+      function overlapCrate (player, crate) {
+        //crate.body.setImmovable(false);
+        crate.disableBody(false, false);
       }
     }
 
@@ -257,7 +271,7 @@
         this.player.anims.play('turn', true);
       }
 
-      if (this.cursors.up.isDown && this.player.body.blocked.down)
+      if (this.cursors.up.isDown && (this.player.body.touching.down || this.player.body.blocked.down))
       {
         this.player.setVelocityY(-230);
       }
