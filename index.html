@@ -38,15 +38,21 @@
 
     function preload ()
     {
+      // bg
       this.load.image('sky', '/assets/environment/parallax-mountain-bg.png');
       this.load.image('farMountain', '/assets/environment/parallax-mountain-montain-far.png');
       this.load.image('mountain', '/assets/environment/parallax-mountain-mountains.png');
       this.load.image('farTrees', '/assets/environment/parallax-mountain-trees.png');
       this.load.image('trees', '/assets/environment/parallax-mountain-foreground-trees.png');
+      // player
       this.load.spritesheet('womanIdle', 'assets/woman-idle.png', { frameWidth: 37, frameHeight: 46 });
       this.load.spritesheet('womanWalk', 'assets/woman-walk.png', { frameWidth: 37, frameHeight: 46 });
+      // tiles
       this.load.image('tiles', 'assets/environment/tileset.png', { frameWidth: 32, frameHeight: 32 });
-      this.load.tilemapTiledJSON('well-map', 'assets/maps/map.json', null)
+      this.load.tilemapTiledJSON('well-map', 'assets/maps/map.json', null);
+      // props
+      this.load.image('crate', 'assets/props/crate.png');
+
       }
 
     function create ()
@@ -117,9 +123,13 @@
       this.floorLayer = this.map.createDynamicLayer('Tile Layer 2', tileset, 0, 450)
       // layer name must match layer name in tiled
 
-      console.log(this.backgroundLayer);
+      this.crates = this.physics.add.staticGroup();
 
-      this.player = this.physics.add.sprite(50, 520, 'womanIdle');
+      this.crates.create(400, 557, 'crate').setScale(2);
+      this.crates.children.iterateLocal('setSize', 78, 67);
+      this.crates.children.iterateLocal('setOffset', -17, -15)
+
+      this.player = this.physics.add.sprite(100, 520, 'womanIdle');
       this.player.displayWidth = 125;
       this.player.scaleY = this.player.scaleX;
       this.player.setCollideWorldBounds(true);
@@ -164,6 +174,7 @@
 
       // colliders
       this.physics.add.collider(this.player, this.backgroundLayer);
+      this.physics.add.collider(this.player, this.crates);
       this.backgroundLayer.setCollisionByExclusion([-1]);
     }
 
