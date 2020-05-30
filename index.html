@@ -16,7 +16,7 @@
 
     let config = {
         type: Phaser.AUTO,
-        width: 1020,
+        width: 1024, // world size is a viewport
         height: 600,
         scene: {
             preload: preload,
@@ -28,7 +28,7 @@
         default: 'arcade',
         arcade: {
             gravity: { y: 300 },
-            debug: false
+            debug: true
         },
     },
 
@@ -45,8 +45,8 @@
       this.load.image('trees', '/assets/environment/parallax-mountain-foreground-trees.png');
       this.load.spritesheet('womanIdle', 'assets/woman-idle.png', { frameWidth: 37, frameHeight: 46 });
       this.load.spritesheet('womanWalk', 'assets/woman-walk.png', { frameWidth: 37, frameHeight: 46 });
-      this.load.image('tiles', 'assets/props.png', { frameWidth: 32, frameHeight: 32 });
-      this.load.tilemapTiledJSON('well-map', '/maps/well-map.json', null)
+      this.load.image('tiles', 'assets/environment/tileset.png', { frameWidth: 32, frameHeight: 32 });
+      this.load.tilemapTiledJSON('well-map', 'assets/maps/map.json', null)
       }
 
     function create ()
@@ -58,13 +58,13 @@
       this.treesDelta = 0.5;
 
       sky = this.add.image(510, 300, 'sky');
-      sky.displayWidth = 1050;
+      sky.displayWidth = 1080;
       sky.scaleY = sky.scaleX;
 
       this.farMountain = this.add.tileSprite(
       510,
       350,
-      1024,
+      1080,
       750, 
       'farMountain'
       )
@@ -75,7 +75,7 @@
       this.mountain = this.add.tileSprite(
       510,
       400,
-      1024,
+      1080,
       750,
       'mountain'
       )
@@ -86,7 +86,7 @@
       this.farTrees = this.add.tileSprite(
       510,
       335,
-      1024,
+      1080,
       750,
       'farTrees'
       )
@@ -97,7 +97,7 @@
       this.trees = this.add.tileSprite(
       510,
       335,
-      1024,
+      1080,
       750,
       'trees'
       )
@@ -105,20 +105,33 @@
       this.trees.tileScaleX = 4;
       this.trees.tileScaleY = 4;
 
+      sky.setScrollFactor(0)
+      this.farMountain.setScrollFactor(0)
+      this.mountain.setScrollFactor(0)
+      this.farTrees.setScrollFactor(0)
+      this.trees.setScrollFactor(0) 
+
       this.map = this.make.tilemap({ key: 'well-map' })
-      const tileset = this.map.addTilesetImage('props', 'tiles', 32, 32)
-      this.backgroundLayer = this.map.createDynamicLayer('Tile Layer 1', tileset, 0, 200);
+      const tileset = this.map.addTilesetImage('tileset', 'tiles', 16, 16)
+      this.backgroundLayer = this.map.createDynamicLayer('Tile Layer 1', tileset, 0, 450)//, 0, -500);
+      this.floorLayer = this.map.createDynamicLayer('Tile Layer 2', tileset, 0, 450)
       // layer name must match layer name in tiled
 
-      //this.backgroundLayer.scale.set(2);
-      //this.backgroundLayer.resizeWorld();
+      console.log(this.backgroundLayer);
 
       this.player = this.physics.add.sprite(50, 520, 'womanIdle');
       this.player.displayWidth = 125;
       this.player.scaleY = this.player.scaleX;
       this.player.setCollideWorldBounds(true);
+      // setup player hitbox
+      this.player.body.setSize(15,40);
+      this.player.body.setOffset(10, 6);
+      
+      this.physics.world.setBounds(0, 0, 3020, 610);
 
-      // this.cameras.main.startFollow(this.player);
+      this.cameras.main.startFollow(this.player);
+      this.cameras.main.setBounds(0, 0, 3020, 610);
+      
       this.cursors = this.input.keyboard.createCursorKeys();
 
       this.anims.create({
@@ -156,7 +169,6 @@
 
     function update ()
     {
-
       if (this.cursors.left.isDown)
       {
         this.player.setVelocityX(-160);
@@ -167,11 +179,13 @@
         }
         this.player.flipX = true;
 
-        this.farMountain.tilePositionX -= this.farMountainDelta;
-        this.mountain.tilePositionX -= this.mountainDelta;
-        this.farTrees.tilePositionX -= this.farTreesDelta;
-        this.trees.tilePositionX -= this.treesDelta;
-
+        if(!this.player.body.blocked.left){
+         this.farMountain.tilePositionX -= this.farMountainDelta;
+         this.mountain.tilePositionX -= this.mountainDelta;
+         this.farTrees.tilePositionX -= this.farTreesDelta;
+         this.trees.tilePositionX -= this.treesDelta;
+        }
+       
       }
       else if (this.cursors.right.isDown)
       {
@@ -183,10 +197,12 @@
         }
         this.player.flipX = false;
 
-        this.farMountain.tilePositionX += this.farMountainDelta;
-        this.mountain.tilePositionX += this.mountainDelta;
-        this.farTrees.tilePositionX += this.farTreesDelta;
-        this.trees.tilePositionX += this.treesDelta;
+        if(!this.player.body.blocked.left){
+          this.farMountain.tilePositionX += this.farMountainDelta;
+          this.mountain.tilePositionX += this.mountainDelta;
+          this.farTrees.tilePositionX += this.farTreesDelta;
+          this.trees.tilePositionX += this.treesDelta;
+        }
       }
       else
       {
