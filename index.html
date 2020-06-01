@@ -28,7 +28,7 @@
         default: 'arcade',
         arcade: {
             gravity: { y: 300 },
-            debug: false
+            debug: true
         },
     },
 
@@ -158,8 +158,8 @@
       this.player.scaleY = this.player.scaleX;
       this.player.setCollideWorldBounds(true);
       // setup player hitbox
-      this.player.body.setSize(15,40);
-      this.player.body.setOffset(10, 6);
+      this.player.body.setSize(6,40);
+      this.player.body.setOffset(15, 6);
       
       this.physics.world.setBounds(0, 0, 3020, 610);
 
